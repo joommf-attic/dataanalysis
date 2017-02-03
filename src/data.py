@@ -31,7 +31,7 @@ class DataAnalysis:
         IPython.display.display(self.slider)
 
 
-class DataAnalysisHoloviews2D:
+class DataAnalysisHoloviews1D:
 
     def __init__(self, data, dynamic=False):
         self.data = data
@@ -75,46 +75,10 @@ class DataAnalysisHoloviews2D:
         return IPython.display.display(self._map_object)
 
 
-class DataAnalysisHoloviews3D:
-
-    def __init__(self, data, dynamic=False):
-        self.data = data
-
-        # The self._ipython_display function is set here, depending
-        # on whether we choose the analysis to be dynamic or not.
-
-        self._ipython_display_ = self._ipython_display_holomap_
-        if dynamic:
-            self._ipython_display_ = self._ipython_display_dynamicmap_
-
+class DataAnalysisHoloviews2D(DataAnalysisHoloviews1D):
     def _signal(self, index):
         """
         This function wraps the signal function from the data class and transforms
         the data into a HoloViws object.
         """
-
         return hv.Image(self.data.signal2D(index))
-
-    def _ipython_display_holomap_(self):
-        """
-        This function creates a static HoloMap from the data, and
-        returns an object which the Notebook can display
-        """
-        self._map_object = hv.HoloMap([(i, self._signal(i)) for i in self.data.index],
-                                      kdims=[hv.Dimension(name='Index',
-                                                          label='Index',
-                                                          values=list(self.data.index))])
-
-        return IPython.display.display(self._map_object)
-
-    def _ipython_display_dynamicmap_(self):
-        """
-        This function creates a dynamic HoloMap from the data,
-        and returns an object which the Notebook can display
-        """
-        self._map_object = hv.DynamicMap(self._signal,
-                                         kdims=[hv.Dimension(name='Index',
-                                                             label='Index',
-                                                             values=list(self.data.index))])
-
-        return IPython.display.display(self._map_object)
